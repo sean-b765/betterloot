@@ -57,8 +57,9 @@ function startJSON(jsonObject) {
 	main.innerHTML = ''
 
 	const renderButton = document.createElement('button')
+	renderButton.classList.add('renderJSON')
 	renderButton.addEventListener('click', renderAsJson)
-	renderButton.innerText = 'Render as JSON'
+	renderButton.innerText = 'Export file...'
 
 	main.appendChild(renderButton)
 
@@ -283,7 +284,7 @@ function dropDownClick(elem) {
 }
 
 function handleItemRemove(e, container) {
-	const item = e.originalTarget.offsetParent
+	const item = e.target.offsetParent
 	container.removeChild(item)
 }
 
