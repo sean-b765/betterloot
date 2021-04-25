@@ -331,9 +331,9 @@ function renderAsJson() {
 		const props = containerValues.querySelectorAll('.item')
 
 		props.forEach((prop) => {
-			_obj.LootTables[container_key][
-				prop.getAttribute('data-key')
-			] = prop.querySelector('input').value
+			_obj.LootTables[container_key][prop.getAttribute('data-key')] = parseInt(
+				prop.querySelector('input').value
+			)
 		})
 	}
 
