@@ -382,6 +382,13 @@ function initSearchItems() {
  * @param {*} displayName
  */
 function addItemToContainer(realName, displayName) {
+	if (existingItems.includes(realName)) {
+		alert('Item already in container')
+		document.getElementById('add').classList.remove('showing')
+		document.body.style.overflowY = 'auto'
+		return
+	}
+
 	const itemContainer = document.createElement('div')
 	itemContainer.classList.add('item')
 	itemContainer.setAttribute('data-key', realName)
@@ -446,14 +453,16 @@ function addItemToContainer(realName, displayName) {
 	document.body.style.overflowY = 'auto'
 }
 
+let existingItems = []
+
 // Shows the search page
 function showSearch(itemListE, container) {
+	existingItems = []
 	currentItemContainer = container
 
 	document.getElementById('add').classList.add('showing')
 	document.body.style.overflowY = 'hidden'
 
-	const existingItems = []
 	itemListE.querySelectorAll('.item').forEach((item) => {
 		existingItems.push(item.getAttribute('data-key'))
 	})
