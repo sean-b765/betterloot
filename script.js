@@ -284,7 +284,6 @@ function dropDownClick(elem) {
 
 function handleItemRemove(e, container) {
 	const item = e.originalTarget.offsetParent
-	console.log(container, item)
 	container.removeChild(item)
 }
 
@@ -397,7 +396,7 @@ function addItemToContainer(realName, displayName) {
 
 	const removeButton = document.createElement('button')
 	removeButton.addEventListener('click', (e) => {
-		handleItemRemove(e, itemsList)
+		handleItemRemove(e, currentItemContainer)
 	})
 	removeButton.innerText = '-'
 	itemContainer.appendChild(removeButton)
