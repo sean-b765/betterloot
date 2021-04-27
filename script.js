@@ -14,9 +14,9 @@ function initialise(fileName = '') {
 				})
 				.then((names) => {
 					ALL_NAMES = names
-					initSearchItems()
+					initialiseSearchNodes()
 
-					startJSON(tableData)
+					startJSONToDOM(tableData)
 				})
 		})
 }
@@ -32,7 +32,7 @@ document.getElementById('import').addEventListener('change', (e) => {
 	reader.onloadend = function () {
 		console.log(reader.result)
 		try {
-			startJSON(JSON.parse(reader.result))
+			startJSONToDOM(JSON.parse(reader.result))
 		} catch (Error) {
 			alert('JSON File has incorrect structure')
 		}
@@ -53,7 +53,7 @@ function setLoader(visibility) {
 	else document.getElementById('loader').classList.remove('visible')
 }
 
-function startJSON(jsonObject) {
+function startJSONToDOM(jsonObject) {
 	main.innerHTML = ''
 
 	const renderButton = document.createElement('button')
@@ -125,7 +125,61 @@ function renderContainerDropdown(container, containerName) {
 	renderContainerItemControls(container, dropContainer)
 }
 
-function renderContainerItemControls(itemJson, containerElement) {
+/**
+ * Renders the Scrap, MaxBPs, ItemsMin and ItemsMax property controllers
+ * @param {*} itemObj
+ * @param {*} containerElement
+ */
+function renderContainerItemControls(itemObj, containerElement) {
+	const containerProperties = renderContainerProperties(itemObj)
+
+	containerElement.appendChild(containerProperties)
+
+	const itemsList = document.createElement('div')
+	itemsList.classList.add('ItemList')
+	itemsList.setAttribute('data-key', 'ItemList')
+
+	// Go through each item in ItemList, render into itemsList container
+	Object.keys(itemObj.ItemList).forEach((itemName, index) => {
+		const displayName = ALL_NAMES[itemName]
+
+		createItemNode(
+			itemName,
+			displayName,
+			itemsList,
+			Object.values(itemObj.ItemList)[index].Max,
+			Object.values(itemObj.ItemList)[index].Min
+		)
+	})
+	containerElement.appendChild(itemsList)
+
+	// Search for new items
+	const addButton = document.createElement('button')
+	addButton.classList.add('add-new')
+	addButton.innerText = '+'
+	addButton.addEventListener('click', () => {
+		showSearch(itemsList, itemsList)
+	})
+
+	containerElement.appendChild(addButton)
+
+	setLoader(false)
+}
+
+function dropDownClick(elem) {
+	if (elem.classList.contains('open')) {
+		elem.classList.remove('open')
+	} else {
+		elem.classList.add('open')
+	}
+}
+
+/**
+ * Create the properties of the container (Scrap amount, MaxBPs, ItemsMin, ItemsMax)
+ * @param {Object} itemJson the item object
+ * @returns {Node}
+ */
+function renderContainerProperties(itemJson) {
 	const containerProperties = document.createElement('div')
 	containerProperties.classList.add('container-props')
 
@@ -188,99 +242,8 @@ function renderContainerItemControls(itemJson, containerElement) {
 	containerProperties.appendChild(maxBp)
 	containerProperties.appendChild(minItems)
 	containerProperties.appendChild(maxItems)
-	containerElement.appendChild(containerProperties)
 
-	const itemsList = document.createElement('div')
-	itemsList.classList.add('ItemList')
-	itemsList.setAttribute('data-key', 'ItemList')
-
-	// Go through each item in ItemList
-	Object.keys(itemJson.ItemList).forEach((itemName) => {
-		const displayName = ALL_NAMES[itemName]
-
-		const src = `./img/${itemName}.png`
-
-		const itemContainer = document.createElement('div')
-		itemContainer.classList.add('item')
-		itemContainer.setAttribute('data-key', itemName)
-
-		// Creating item name/image at top of container
-		const name = document.createElement('p')
-		const img = document.createElement('img')
-		img.src = src
-		name.innerHTML = displayName
-		itemContainer.appendChild(name)
-		itemContainer.appendChild(img)
-
-		const removeButton = document.createElement('button')
-		removeButton.addEventListener('click', (e) => {
-			handleItemRemove(e, itemsList)
-		})
-		removeButton.innerText = '-'
-		itemContainer.appendChild(removeButton)
-
-		// Controls
-		const controls = document.createElement('div')
-		controls.classList.add('controls')
-
-		// Max
-		const maxRow = document.createElement('div')
-		maxRow.classList.add('max')
-
-		// Max controls
-		const maxText = document.createElement('p')
-		const maxInput = document.createElement('input')
-		maxInput.value = itemJson.ItemList[itemName].Max
-		maxInput.type = 'text'
-		maxInput.placeholder = 'Max'
-		maxText.innerText = 'Max Items'
-
-		maxRow.appendChild(maxText)
-		maxRow.appendChild(maxInput)
-
-		// Min controls
-		const minRow = document.createElement('div')
-		minRow.classList.add('min')
-
-		const minText = document.createElement('p')
-		const minInput = document.createElement('input')
-		minInput.value = itemJson.ItemList[itemName].Min
-		minInput.type = 'text'
-		minInput.placeholder = 'Min'
-		minText.innerText = 'Min Items'
-
-		minRow.appendChild(minText)
-		minRow.appendChild(minInput)
-
-		// Add min/max row to controls
-		controls.appendChild(maxRow)
-		controls.appendChild(minRow)
-
-		itemContainer.appendChild(controls)
-
-		itemsList.appendChild(itemContainer)
-	})
-	containerElement.appendChild(itemsList)
-
-	// Search for new items
-	const addButton = document.createElement('button')
-	addButton.classList.add('add-new')
-	addButton.innerText = '+'
-	addButton.addEventListener('click', () => {
-		showSearch(itemsList, itemsList)
-	})
-
-	containerElement.appendChild(addButton)
-
-	setLoader(false)
-}
-
-function dropDownClick(elem) {
-	if (elem.classList.contains('open')) {
-		elem.classList.remove('open')
-	} else {
-		elem.classList.add('open')
-	}
+	return containerProperties
 }
 
 function handleItemRemove(e, container) {
@@ -288,6 +251,9 @@ function handleItemRemove(e, container) {
 	container.removeChild(item)
 }
 
+/**
+ * Render the DOM elements' values and stringify the JSON, then download the JSON file
+ */
 function renderAsJson() {
 	if (main.childNodes.length <= 3) {
 		return
@@ -349,7 +315,7 @@ function renderAsJson() {
 	setLoader(false)
 }
 
-function initSearchItems() {
+function initialiseSearchNodes() {
 	const searchContainer = document
 		.getElementById('add')
 		.querySelector('.container')
@@ -372,17 +338,29 @@ function initSearchItems() {
 		searchContainer.appendChild(item)
 
 		item.addEventListener('click', () => {
-			addItemToContainer(realName, displayName)
+			createItemNode(realName, displayName)
 		})
 	})
 }
 
 /**
- * Add item to the correct container from search results
- * @param {*} realName
- * @param {*} displayName
+ *
+ * @param {string} realName real name of Rust item
+ * @param {string} displayName The name to display to users
+ * @param {Node} targetContainer The parent container to add this item to
+ * @param {Number} max Max value of this item
+ * @param {Number} min Min value of this item
+ * @returns {Node} the item Node
  */
-function addItemToContainer(realName, displayName) {
+function createItemNode(
+	realName,
+	displayName,
+	targetContainer = null,
+	max = 1,
+	min = 1
+) {
+	if (!targetContainer) targetContainer = currentItemContainer
+
 	if (existingItems.includes(realName)) {
 		alert('Item already in container')
 		document.getElementById('add').classList.remove('showing')
@@ -404,7 +382,7 @@ function addItemToContainer(realName, displayName) {
 
 	const removeButton = document.createElement('button')
 	removeButton.addEventListener('click', (e) => {
-		handleItemRemove(e, currentItemContainer)
+		handleItemRemove(e, targetContainer)
 	})
 	removeButton.innerText = '-'
 	itemContainer.appendChild(removeButton)
@@ -420,7 +398,7 @@ function addItemToContainer(realName, displayName) {
 	// Max controls
 	const maxText = document.createElement('p')
 	const maxInput = document.createElement('input')
-	maxInput.value = 1
+	maxInput.value = max
 	maxInput.type = 'text'
 	maxInput.placeholder = 'Max'
 	maxText.innerText = 'Max Items'
@@ -434,7 +412,7 @@ function addItemToContainer(realName, displayName) {
 
 	const minText = document.createElement('p')
 	const minInput = document.createElement('input')
-	minInput.value = 1
+	minInput.value = min
 	minInput.type = 'text'
 	minInput.placeholder = 'Min'
 	minText.innerText = 'Min Items'
@@ -448,7 +426,7 @@ function addItemToContainer(realName, displayName) {
 
 	itemContainer.appendChild(controls)
 
-	currentItemContainer.appendChild(itemContainer)
+	targetContainer.appendChild(itemContainer)
 
 	document.getElementById('add').classList.remove('showing')
 	document.body.style.overflowY = 'auto'
