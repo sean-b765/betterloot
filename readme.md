@@ -1,1 +1,1 @@
-A Config Generator for BetterLoot Rust
+A config generator for the Rust oxide plugin BetterLoot
