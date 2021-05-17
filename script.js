@@ -1,18 +1,22 @@
 setLoader(true)
 
 function initialise(fileName = '') {
+	// Load default file 'table.json'
 	if (!fileName || fileName === '') fileName = './table.json'
 
+	// Get the file via fetch
 	fetch(fileName)
 		.then((res) => {
 			return res.json()
 		})
 		.then((tableData) => {
+			// Once file is loaded, load the item names
 			fetch('./nameList.json')
 				.then((res) => {
 					return res.json()
 				})
 				.then((names) => {
+					// Now we can render the DOM
 					ALL_NAMES = names
 					initialiseSearchNodes()
 
@@ -22,6 +26,7 @@ function initialise(fileName = '') {
 }
 initialise()
 
+// Import a JSON file
 document.getElementById('import').addEventListener('change', (e) => {
 	const file = e.target.files[0]
 
@@ -33,7 +38,8 @@ document.getElementById('import').addEventListener('change', (e) => {
 		console.log(reader.result)
 		try {
 			startJSONToDOM(JSON.parse(reader.result))
-		} catch (Error) {
+		} catch (error) {
+			// Case of incompatible JSON structure
 			alert('JSON File has incorrect structure')
 		}
 	}
@@ -48,21 +54,24 @@ const main = document.querySelector('main')
 
 let currentItemContainer = null
 
+// Show or hide the loader
 function setLoader(visibility) {
 	if (visibility) document.getElementById('loader').classList.add('visible')
 	else document.getElementById('loader').classList.remove('visible')
 }
 
+// Start rendering DOM elements
 function startJSONToDOM(jsonObject) {
 	main.innerHTML = ''
 
+	// Create the Export file... button
 	const renderButton = document.createElement('button')
 	renderButton.classList.add('renderJSON')
 	renderButton.addEventListener('click', renderAsJson)
 	renderButton.innerText = 'Export file...'
-
 	main.appendChild(renderButton)
 
+	// Render the dropdown sections for each immeditate key
 	Object.keys(jsonObject.LootTables).forEach((container, index) => {
 		renderContainerDropdown(
 			Object.values(jsonObject.LootTables)[index],
@@ -71,11 +80,8 @@ function startJSONToDOM(jsonObject) {
 	})
 }
 
+// Clickable dropdown for in-game containers
 function renderContainerDropdown(container, containerName) {
-	// console.log(containerName)
-	// console.log(container)
-	// console.log('\n')
-
 	const dropDown = document.createElement('div')
 	dropDown.classList.add('dropdown')
 
@@ -87,14 +93,14 @@ function renderContainerDropdown(container, containerName) {
 	containerText.innerHTML = containerName
 	dropDown.appendChild(containerText)
 
-	// Add container
 	dropDown.appendChild(dropContainer)
 
+	//
 	containerText.addEventListener('click', () => {
 		dropDownClick(dropDown)
 	})
 	containerText.addEventListener('mouseenter', (e) => {
-		// There is no item for dmloot
+		// There is no in-game prefab for dmloot or loot_trash containers
 		if (
 			containerName.includes('dmloot') ||
 			containerName.includes('loot_trash')
@@ -166,6 +172,10 @@ function renderContainerItemControls(itemObj, containerElement) {
 	setLoader(false)
 }
 
+/**
+ * Clicking the dropdown will apply the open class to it
+ * @param {Node} elem The element that was clicked
+ */
 function dropDownClick(elem) {
 	if (elem.classList.contains('open')) {
 		elem.classList.remove('open')
@@ -176,10 +186,10 @@ function dropDownClick(elem) {
 
 /**
  * Create the properties of the container (Scrap amount, MaxBPs, ItemsMin, ItemsMax)
- * @param {Object} itemJson the item object
+ * @param {object} itemObject the item object
  * @returns {Node}
  */
-function renderContainerProperties(itemJson) {
+function renderContainerProperties(itemObject) {
 	const containerProperties = document.createElement('div')
 	containerProperties.classList.add('container-props')
 
@@ -194,7 +204,7 @@ function renderContainerProperties(itemJson) {
 
 	scrapText.innerText = 'Scrap Amount'
 	scrapImg.src = './img/scrap.png'
-	scrapInput.value = itemJson.Scrap
+	scrapInput.value = itemObject.Scrap
 
 	scrap.appendChild(scrapText)
 	scrap.appendChild(scrapImg)
@@ -207,7 +217,7 @@ function renderContainerProperties(itemJson) {
 	const maxBpInput = document.createElement('input')
 	const maxBpText = document.createElement('p')
 	maxBpText.innerText = 'Max BPs'
-	maxBpInput.value = itemJson.MaxBPs
+	maxBpInput.value = itemObject.MaxBPs
 
 	maxBp.appendChild(maxBpText)
 	maxBp.appendChild(maxBpInput)
@@ -220,7 +230,7 @@ function renderContainerProperties(itemJson) {
 	const maxItemText = document.createElement('p')
 	const maxItemInput = document.createElement('input')
 	maxItemText.innerText = 'Max Items'
-	maxItemInput.value = itemJson.ItemsMax
+	maxItemInput.value = itemObject.ItemsMax
 
 	maxItems.appendChild(maxItemText)
 	maxItems.appendChild(maxItemInput)
@@ -233,7 +243,7 @@ function renderContainerProperties(itemJson) {
 	const minItemText = document.createElement('p')
 	const minItemInput = document.createElement('input')
 	minItemText.innerText = 'Min Items'
-	minItemInput.value = itemJson.ItemsMin
+	minItemInput.value = itemObject.ItemsMin
 
 	minItems.appendChild(minItemText)
 	minItems.appendChild(minItemInput)
@@ -246,6 +256,11 @@ function renderContainerProperties(itemJson) {
 	return containerProperties
 }
 
+/**
+ * Remove the item node from its parent container
+ * @param {*} e click event
+ * @param {Node} container parent container of the item to remove
+ */
 function handleItemRemove(e, container) {
 	const item = e.target.offsetParent
 	container.removeChild(item)
@@ -315,6 +330,7 @@ function renderAsJson() {
 	setLoader(false)
 }
 
+// Create the search item nodes for every item in nameList.json
 function initialiseSearchNodes() {
 	const searchContainer = document
 		.getElementById('add')
@@ -344,7 +360,7 @@ function initialiseSearchNodes() {
 }
 
 /**
- *
+ * Create the item Node with min/max quantity controls and delete button at top-right
  * @param {string} realName real name of Rust item
  * @param {string} displayName The name to display to users
  * @param {Node} targetContainer The parent container to add this item to
@@ -447,6 +463,9 @@ function showSearch(itemListE, container) {
 	})
 }
 
+/*
+	Typing should start filtering through all items
+*/
 document.getElementById('search').addEventListener('input', (e) => {
 	const term = e.target.value
 	filterResults(term)
@@ -455,6 +474,10 @@ document.getElementById('close').addEventListener('click', () => {
 	document.getElementById('add').classList.remove('showing')
 	document.body.style.overflowY = 'auto'
 })
+/**
+ * Filter through all item names and try to match with the searchTerm
+ * @param {string} searchTerm the term (singular) to search for
+ */
 function filterResults(searchTerm = '') {
 	const searchItems = document
 		.getElementById('add')
