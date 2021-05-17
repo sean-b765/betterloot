@@ -7,6 +7,25 @@
 	font-family: 'Poppins', sans-serif;
 }
 
+section {
+	padding: 1rem 5rem;
+}
+section a {
+	position: absolute;
+	top: 20px;
+	right: 50px;
+	background: slateblue;
+	color: white;
+	border-radius: 100px;
+	text-transform: uppercase;
+	text-decoration: none;
+	padding: 10px 20px;
+	transition: all 0.3s ease;
+}
+section a:hover {
+	background: rgba(105, 90, 205, 0.808);
+}
+
 main {
 	background: rgb(228, 228, 228);
 	display: flex;
@@ -14,7 +33,7 @@ main {
 	justify-content: start;
 	align-items: start;
 	padding: 1rem;
-	padding-bottom: 20rem;
+	padding-bottom: 5rem;
 }
 
 .dropdown {
@@ -246,6 +265,66 @@ button.renderJSON {
 }
 #add input {
 	width: 20rem;
+}
+
+#close {
+	padding: 10px 16px;
+	border-radius: 100px;
+	cursor: pointer;
+	background: rgb(235, 110, 110);
+	border: none;
+	margin-top: 5px;
+	color: rgb(0, 0, 0);
+	letter-spacing: 1px;
+	text-transform: uppercase;
+	margin-bottom: 10px;
+}
+#close span {
+	color: white;
+	text-transform: none;
+	margin: 10px;
+}
+
+footer {
+	padding: 1rem 5rem;
+	display: flex;
+	align-items: center;
+	justify-content: center;
+	flex-direction: column;
+	padding-bottom: 10rem;
+}
+
+footer a {
+	color: slateblue;
+	text-decoration: none;
+	transition: all 0.3s ease;
+	border-bottom: 2px solid transparent;
+	margin: 0 5px;
+}
+footer a.title {
+	text-transform: uppercase;
+	margin: 1rem;
+	font-size: 2rem;
+}
+footer a.btn {
+	margin-top: 20px;
+	background: slateblue;
+	padding: 10px 20px;
+	transition: all 0.5s ease-in-out;
+	color: white;
+	border-radius: 100px;
+}
+a.btn:hover {
+	scale: 1.05;
+}
+footer a:hover {
+	border-bottom: 2px solid slateblue;
+}
+
+code {
+	font-family: 'Courier New', Courier, monospace;
+	background: whitesmoke;
+	color: darkgreen;
 }
 
 @keyframes pulseA {
