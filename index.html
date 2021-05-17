@@ -1,28 +1,52 @@
 <!DOCTYPE html>
 <html lang="en">
-<head>
-  <meta charset="UTF-8">
-  <meta http-equiv="X-UA-Compatible" content="IE=edge">
-  <meta name="viewport" content="width=device-width, initial-scale=1.0">
-  <link rel="stylesheet" href="style.css">
-  <title>BetterLoot Config Generator</title>
-</head>
-<body>
+	<head>
+		<meta charset="UTF-8" />
+		<meta http-equiv="X-UA-Compatible" content="IE=edge" />
+		<meta name="viewport" content="width=device-width, initial-scale=1.0" />
+		<link rel="stylesheet" href="style.css" />
+		<title>BetterLoot Config Generator</title>
+	</head>
+	<body>
+		<section id="top">
+			<p>Import existing BetterLoot.json:</p>
+			<input type="file" id="import" accept="application/json" />
+			<a href="#info">? Info</a>
+		</section>
 
-  <section>
-    <p>Import existing BetterLoot.json:</p>
-    <input type="file" id="import" accept="application/json">
-  </section>
+		<main></main>
 
-  <main></main>
+		<footer id="info">
+			<a href="#" class="title" target="_blank">Created by seanb</a>
+			<div>
+				Rust is a survival game created by Facepunch. This tool helps server
+				owners who have the Oxide plugin
+				<a href="https://umod.org/plugins/better-loot" target="_blank"
+					>BetterLoot</a
+				>
+				installed. You can edit the loot tables for each container easily and
+				search for items here, without having to go through 4000 lines of text!
+				<br />
+				The containers without mouse-over image previews are not in Rust as of
+				May 2021 (as they have no in-game prefabs)
+				<br /><br />
+				The custom loot table used by BetterLoot is located at:
+				<code>/oxide/data/BetterLoot/LootTable.json</code>
+			</div>
+			<a href="#top" class="btn">Back to Top</a>
+		</footer>
 
-  <div class="hover-preview"><img src="" alt=""></div>
-  <div id="loader" class=""></div>
-  <div id="add">
-    <input type="text" id="search" placeholder="Search..."><button id="close">Close</button>
-    <div class="container"></div>
-  </div>
-  
-  <script src="./script.js" type="module"></script>
-</body>
+		<div class="hover-preview"><img src="" alt="" /></div>
+		<div id="loader" class=""></div>
+		<div id="add">
+			<input type="text" id="search" placeholder="Search..." /><button
+				id="close"
+			>
+				<span>x</span>Close<span>x</span>
+			</button>
+			<div class="container"></div>
+		</div>
+
+		<script src="./script.js" type="module"></script>
+	</body>
 </html>
