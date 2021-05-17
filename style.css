@@ -327,6 +327,10 @@ code {
 	color: darkgreen;
 }
 
+ol {
+	margin: 2rem 0 0 2rem;
+}
+
 @keyframes pulseA {
 	0% {
 		transform: translate(-50%, -50%) scale(1.09);
